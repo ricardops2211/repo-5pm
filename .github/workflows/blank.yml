@@ -1,13 +1,34 @@
-name: Action cada 5 minutos
+name: Leer secret de GitHub (JSON)
 
 on:
-  schedule:
-    - cron: "*/5 * * * *"
+  workflow_dispatch:
+  push:
+    branches: ["json-example"]
 
 jobs:
-  ejecutar-tarea:
+  demo:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Mostrar mensaje
-        run: echo "Esta acción se ejecuta cada 5 minutos"
+      - name: Parsear JSON desde GitHub Secrets
+        id: parse
+        env:
+          API_URL: ${{ fromJSON(secrets.APP_CONFIG_JSON).api_url }}
+          PROJECT_ID: ${{ fromJSON(secrets.APP_CONFIG_JSON).project_id }}
+          TOKEN: ${{ fromJSON(secrets.APP_CONFIG_JSON).token }}
+        run: |
+          echo "api_url=$API_URL" >> "$GITHUB_OUTPUT"
+          echo "project_id=$PROJECT_ID" >> "$GITHUB_OUTPUT"
+
+          # No imprimas el token (secreto). Solo validamos que llegó:
+          if [ -n "$TOKEN" ]; then
+            echo "token_present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "token_present=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Usar valores parseados
+        run: |
+          echo "API URL: ${{ steps.parse.outputs.api_url }}"
+          echo "Project ID: ${{ steps.parse.outputs.project_id }}"
+          echo "¿Token presente?: ${{ steps.parse.outputs.token_present }}"
