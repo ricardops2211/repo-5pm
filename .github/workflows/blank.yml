@@ -1,29 +1,13 @@
-name: CI usando workflow reusable
+name: Action cada 5 minutos
 
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  schedule:
+    - cron: "*/5 * * * *"
 
 jobs:
-  build:
+  ejecutar-tarea:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v5
-
-      # Este paso solo crea un archivo de ejemplo, sin npm
-      - name: Crear artefacto de prueba
-        run: |
-          mkdir -p output
-          echo "Esto es 15 de diciembre 2025" > output/hello.txt
-
-      - name: Subir artefacto
-        uses: actions/upload-artifact@v4
-        with:
-          name: prueba-artifact
-          path: output
-          if-no-files-found: warn
+      - name: Mostrar mensaje
+        run: echo "Esta acción se ejecuta cada 5 minutos"
