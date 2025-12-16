@@ -35,6 +35,6 @@ jobs:
 
       - name: Leer secret simple
         env:
-          MY_TOKEN: ${{ secrets.PARAISO }}
+          PARAISO: ${{ secrets.PARAISO }}
         run: |
-          echo contenido de paraiso: ${#MY_TOKEN}"
+          echo "Secreto PARAISO cargado: ${#PARAISO}"
