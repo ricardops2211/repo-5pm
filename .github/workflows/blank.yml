@@ -32,3 +32,9 @@ jobs:
           echo "API URL: ${{ steps.parse.outputs.api_url }}"
           echo "Project ID: ${{ steps.parse.outputs.project_id }}"
           echo "¿Token presente?: ${{ steps.parse.outputs.token_present }}"
+
+      - name: Leer secret simple
+        env:
+          MY_TOKEN: ${{ secrets.PARAISO }}
+        run: |
+          echo contenido de paraiso: ${#MY_TOKEN}"
