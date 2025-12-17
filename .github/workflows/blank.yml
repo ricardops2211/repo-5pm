@@ -1,13 +1,32 @@
-name: Action cada 5 minutos
+name: Generate Workflow Report
 
 on:
-  schedule:
-    - cron: "*/5 * * * *"
+  workflow_dispatch:  # Ejecutar manualmente desde GitHub
 
 jobs:
-  ejecutar-tarea:
+  generate-report:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Mostrar mensaje
-        run: echo "Esta acción se ejecuta cada 5 minutos"
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
+
+      - name: Obtener ejecuciones de GitHub Actions
+        run: ./get_runs.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_FULL: ${{ github.repository }}
+
+      - name: Procesar ejecuciones y generar CSV
+        run: python3 parse_runs.py
+
+      - name: Subir CSV como artefacto
+        uses: actions/upload-artifact@v3
+        with:
+          name: workflow-runs-report
+          path: runs_report.csv
