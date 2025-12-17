@@ -1,0 +1,4 @@
+{
+  "CI": {"owner": "dev-team", "priority": "high"},
+  "Deploy": {"owner": "ops-team", "priority": "medium"}
+}
