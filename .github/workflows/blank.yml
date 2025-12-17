@@ -28,7 +28,7 @@ jobs:
         run: python3 parse_runs.py
 
       - name: Subir CSV como artefacto
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: workflow-runs-report
           path: runs_report.csv
