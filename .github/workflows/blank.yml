@@ -13,6 +13,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Dar permisos a get_runs.sh
+        run: chmod +x get_runs.sh
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
