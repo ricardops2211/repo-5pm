@@ -1,7 +1,9 @@
 name: Generate Workflow Report
 
 on:
-  workflow_dispatch:  # Ejecutar manualmente desde GitHub
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "pablo-1712" ]
 
 jobs:
   generate-report:
