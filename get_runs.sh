@@ -1,7 +1,6 @@
 #!/bin/sh
 
-# No hace falta definir variables manualmente.
-# GitHub Actions pasará:
+# Variables pasadas desde GitHub Actions:
 #   - REPO_FULL: OWNER/REPO
 #   - GITHUB_TOKEN: secret automático
 
