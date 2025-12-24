@@ -1,4 +1,4 @@
-name: Conexión a Vault
+name: Conexión a Vaults
 
 on:
   push:
