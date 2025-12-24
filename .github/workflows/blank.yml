@@ -1,4 +1,4 @@
-name: Conexión a vault
+name: Conexión a Vault
 
 on:
   push:
@@ -24,7 +24,7 @@ jobs:
       - name: Read secret from Vault
         run: |
           USER=$(docker exec -e VAULT_ADDR=http://127.0.0.1:8200 -e VAULT_TOKEN=$VAULT_TOKEN vault \
-            vault kv get -field=username secret/apiNavidad)
+            vault kv get -field=keyUi secret/apiNavidad)
           PASS=$(docker exec -e VAULT_ADDR=http://127.0.0.1:8200 -e VAULT_TOKEN=$VAULT_TOKEN vault \
             vault kv get -field=password secret/apiNavidad)
           echo "APP_USER=$USER" >> $GITHUB_ENV
@@ -34,5 +34,3 @@ jobs:
         run: |
           echo "Usuario: $APP_USER"
           echo "Password length: ${#APP_PASS}"
-
-          echo "APP_PASS=$PASS" >> $GITHUB_ENV
