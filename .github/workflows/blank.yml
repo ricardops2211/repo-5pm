@@ -1,13 +1,35 @@
-name: Action cada 5 minutos
+name: Conexión a vault
 
 on:
-  schedule:
-    - cron: "*/5 * * * *"
+  push:
+    branches: [connection-hashicorp]
 
 jobs:
-  ejecutar-tarea:
-    runs-on: ubuntu-latest
+  vault:
+    runs-on: self-hosted
 
     steps:
-      - name: Mostrar mensaje
-        run: echo "Esta acción se ejecuta cada 5 minutos"
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Login to Vault via AppRole
+        id: vault-login
+        run: |
+          export VAULT_ADDR=http://127.0.0.1:8200
+          TOKEN=$(vault write -field=token auth/approle/login \
+            role_id=${{ secrets.VAULT_ROLE_ID }} \
+            secret_id=${{ secrets.VAULT_SECRET_ID }})
+          echo "VAULT_TOKEN=$TOKEN" >> $GITHUB_ENV
+
+      - name: Read secret from Vault
+        run: |
+          export VAULT_ADDR=http://127.0.0.1:8200
+          USER=$(vault kv get -field=username secret/app)
+          PASS=$(vault kv get -field=password secret/app)
+          echo "APP_USER=$USER" >> $GITHUB_ENV
+          echo "APP_PASS=$PASS" >> $GITHUB_ENV
+
+      - name: Use secret
+        run: |
+          echo "Usuario: $APP_USER"
+          echo "Password length: ${#APP_PASS}"
