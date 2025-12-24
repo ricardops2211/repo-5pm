@@ -23,14 +23,15 @@ jobs:
 
       - name: Read secret from Vault
         run: |
-          USER=$(docker exec -e VAULT_ADDR=http://127.0.0.1:8200 -e VAULT_TOKEN=$VAULT_TOKEN vault \
-            vault kv get -field=keyUi secret/apiNavidad)
-          PASS=$(docker exec -e VAULT_ADDR=http://127.0.0.1:8200 -e VAULT_TOKEN=$VAULT_TOKEN vault \
-            vault kv get -field=password secret/apiNavidad)
-          echo "APP_USER=$USER" >> $GITHUB_ENV
-          echo "APP_PASS=$PASS" >> $GITHUB_ENV
+          # Leer el secret completo en JSON
+          SECRET_JSON=$(docker exec -e VAULT_ADDR=http://127.0.0.1:8200 -e VAULT_TOKEN=$VAULT_TOKEN vault \
+            vault kv get -format=json secret/australia)
+      
+          # Extraer username y password
+          USERNAME=$(echo $SECRET_JSON | jq -r '.data.data.username')
+          PASSWORD=$(echo $SECRET_JSON | jq -r '.data.data.password')
+      
+          # Exportar variables para otros pasos
+          echo "APP_USER=$USERNAME" >> $GITHUB_ENV
+          echo "APP_PASS=$PASSWORD" >> $GITHUB_ENV
 
-      - name: Use secret
-        run: |
-          echo "Usuario: $APP_USER"
-          echo "Password length: ${#APP_PASS}"
