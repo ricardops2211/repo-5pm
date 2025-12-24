@@ -21,17 +21,18 @@ jobs:
             secret_id=${{ secrets.VAULT_SECRET_ID }})
           echo "VAULT_TOKEN=$TOKEN" >> $GITHUB_ENV
 
-      - name: Read secret from Vault
+      - name: Read secret australia from Vault
         run: |
-          # Leer el secret completo en JSON
-          SECRET_JSON=$(docker exec -e VAULT_ADDR=http://127.0.0.1:8200 -e VAULT_TOKEN=$VAULT_TOKEN vault \
-            vault kv get -format=json secret/australia)
-      
-          # Extraer username y password
-          USERNAME=$(echo $SECRET_JSON | jq -r '.data.data.username')
-          PASSWORD=$(echo $SECRET_JSON | jq -r '.data.data.password')
-      
-          # Exportar variables para otros pasos
-          echo "APP_USER=$USERNAME" >> $GITHUB_ENV
-          echo "APP_PASS=$PASSWORD" >> $GITHUB_ENV
+          APP_USER=$(docker exec -e VAULT_ADDR=http://127.0.0.1:8200 -e VAULT_TOKEN=$VAULT_TOKEN vault \
+            vault kv get -field=username secret/australia)
+          
+          APP_PASS=$(docker exec -e VAULT_ADDR=http://127.0.0.1:8200 -e VAULT_TOKEN=$VAULT_TOKEN vault \
+            vault kv get -field=password secret/australia)
 
+          echo "APP_USER=$APP_USER" >> $GITHUB_ENV
+          echo "APP_PASS=$APP_PASS" >> $GITHUB_ENV
+
+      - name: Use secrets
+        run: |
+          echo "Usuario: $APP_USER"
+          echo "Password length: ${#APP_PASS}"
