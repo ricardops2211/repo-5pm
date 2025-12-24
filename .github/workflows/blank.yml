@@ -12,19 +12,29 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v3
 
-      - name: Login to Vault via AppRole (docker exec)
+      - name: Login to Vault via AppRole
         id: vault-login
         run: |
-          TOKEN=$(docker exec vault vault write -field=token auth/approle/login \
+          TOKEN=$(docker exec -e VAULT_ADDR=http://127.0.0.1:8200 vault \
+            vault write -field=token auth/approle/login \
             role_id=${{ secrets.VAULT_ROLE_ID }} \
             secret_id=${{ secrets.VAULT_SECRET_ID }})
           echo "VAULT_TOKEN=$TOKEN" >> $GITHUB_ENV
 
-      - name: Read secret from Vault (docker exec)
+      - name: Read secret from Vault
         run: |
-          USER=$(docker exec -e VAULT_TOKEN=$VAULT_TOKEN vault vault kv get -field=username secret/app)
-          PASS=$(docker exec -e VAULT_TOKEN=$VAULT_TOKEN vault vault kv get -field=password secret/app)
+          USER=$(docker exec -e VAULT_ADDR=http://127.0.0.1:8200 -e VAULT_TOKEN=$VAULT_TOKEN vault \
+            vault kv get -field=username secret/app)
+          PASS=$(docker exec -e VAULT_ADDR=http://127.0.0.1:8200 -e VAULT_TOKEN=$VAULT_TOKEN vault \
+            vault kv get -field=password secret/app)
           echo "APP_USER=$USER" >> $GITHUB_ENV
+          echo "APP_PASS=$PASS" >> $GITHUB_ENV
+
+      - name: Use secret
+        run: |
+          echo "Usuario: $APP_USER"
+          echo "Password length: ${#APP_PASS}"
+
           echo "APP_PASS=$PASS" >> $GITHUB_ENV
 
       - name: Use secret
